@@ -3,6 +3,7 @@ package com.andre.isidoro.testDB;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -30,6 +31,16 @@ public class TestDB extends HttpServlet{
 			connection.close();
 		}catch(Exception e) {
 		}
+	}
+	
+	
+	public static void main(String[] args) throws ClassNotFoundException, SQLException {
+		
+		System.out.println("Connecting to database: " + JDBC_URL);
+		Class.forName(DRIVER);
+		Connection connection = DriverManager.getConnection(JDBC_URL, USER, PASSWORD);
+		System.out.print("Connection successfull");
+		connection.close();
 	}
 
 }
