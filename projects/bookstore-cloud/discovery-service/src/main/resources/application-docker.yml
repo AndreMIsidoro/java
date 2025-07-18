@@ -1,0 +1,12 @@
+server:
+  port: 8761  # usually the same, but you can change if needed
+
+eureka:
+  client:
+    # in docker maybe Eureka clients are different or disabled
+    register-with-eureka: false
+    fetch-registry: false
+
+logging:
+  level:
+    org.springframework.cloud.netflix.eureka: DEBUG

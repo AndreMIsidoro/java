@@ -11,3 +11,13 @@ spring:
           uri: https://github.com/AndreMIsidoro/java.git
           search-paths: projects/bookstore-config
           default-label: master
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always

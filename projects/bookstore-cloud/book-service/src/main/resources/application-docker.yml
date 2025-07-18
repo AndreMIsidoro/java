@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres:5432/bookdb   # 'postgres' = service name in docker-compose network
+    username: postgres
+    password: password
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+
+  endpoint:
+    health:
+      show-details: always
