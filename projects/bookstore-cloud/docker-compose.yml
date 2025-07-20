@@ -3,6 +3,7 @@ version: '3.8'
 services:
   postgres:
     image: postgres:16
+    container_name: postgres
     environment:
       POSTGRES_DB: bookdb
       POSTGRES_USER: postgres
@@ -19,34 +20,62 @@ services:
     networks:
       - bookstore-net
 
-  config-service:
-    build: ./config-service
+
+  discovery-service:
+    build:
+      context: .
+      dockerfile: discovery-service/Dockerfile
+    container_name: discovery-service
     ports:
-      - "8888:8888"
+      - "8761:8761"
     depends_on:
       postgres:
         condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: docker
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      test: ["CMD", "curl", "-f", "http://discovery-service:8761/actuator/health"]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
       - bookstore-net
 
-  discovery-service:
-    build: ./discovery-service
+  config-service:
+    build:
+      context: .
+      dockerfile: config-service/Dockerfile
+    container_name: config-service
     ports:
-      - "8761:8761"
+      - "8888:8888"
     depends_on:
-      config-service:
+      postgres:
+        condition: service_healthy
+      discovery-service:
         condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: docker
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      test: ["CMD", "curl", "-f", "http://config-service:8888/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - bookstore-net
+  api-gateway:
+    build:
+      context: .
+      dockerfile: api-gateway/Dockerfile
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://api-gateway:8080/actuator/health"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -54,7 +83,10 @@ services:
       - bookstore-net
 
   book-service:
-    build: ./book-service
+    build:
+      context: .
+      dockerfile: book-service/Dockerfile
+    container_name: book-service
     ports:
       - "8081:8081"
     depends_on:
@@ -65,7 +97,7 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: docker
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
+      test: ["CMD", "curl", "-f", "http://book-service:8081/actuator/health"]
       interval: 10s
       timeout: 5s
       retries: 5

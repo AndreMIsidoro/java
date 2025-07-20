@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/bookdb
+    url: jdbc:postgresql://postgresql:5432/bookdb
     username: postgres
     password: password
     driver-class-name: org.postgresql.Driver
@@ -12,6 +12,16 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+
+  application:
+    name: book-service
+  cloud:
+    config:
+      uri: http://config-service:8888
+    discovery:
+      enabled: true
+  config:
+    import: "optional:configserver:"
 
 management:
   endpoints:

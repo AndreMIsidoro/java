@@ -13,6 +13,8 @@ spring:
           default-label: master
 
 
+
+
 management:
   endpoints:
     web:
